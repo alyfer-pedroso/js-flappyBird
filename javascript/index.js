@@ -67,7 +67,9 @@ const setControllers = () => {
       player.pressed = true;
     });
 
-    player.pressed = false;
+    addEventListener("touchend", (e) => {
+      player.pressed = false;
+    });
   }
 };
 
