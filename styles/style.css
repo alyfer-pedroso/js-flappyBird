@@ -1,0 +1,33 @@
+@font-face {
+  font-family: Emulogic;
+  src: url("../font/emulogic.ttf");
+}
+
+body {
+  background-color: #222;
+}
+
+div {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  height: 100%;
+}
+
+canvas {
+  border-radius: 1rem;
+  border: 1rem solid #000;
+}
+
+img {
+  display: none;
+}
+
+@media (min-width: 900px) {
+  body {
+    height: 100vh;
+  }
+  div {
+    align-items: center;
+  }
+}
