@@ -7,6 +7,7 @@ class Player {
     this.width = width;
     this.height = height;
     this.pressed = false;
+    this.canDraw = true;
     this.position = {
       x: x,
       y: y,
@@ -18,7 +19,7 @@ class Player {
 
   draw() {
     canvasContext.save();
-    canvasContext.drawImage(birdSprite, this.position.x, this.position.y, this.width, this.height);
+    if (this.canDraw) canvasContext.drawImage(birdSprite, this.position.x, this.position.y, this.width, this.height);
     canvasContext.restore();
   }
 

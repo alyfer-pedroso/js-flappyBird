@@ -24,7 +24,8 @@ let backgrounds = [new Background(0, 0, canvas.width, canvas.height, 0), new Bac
 let pipes = [new Pipe(0), new Pipe(200), new Pipe(400)];
 let grounds = [new Ground(0), new Ground(350)];
 
-const createRect = (color, x, y, width, height) => {
+const createRect = (color, x, y, width, height, alpha) => {
+  canvasContext.globalAlpha = alpha ? alpha : 1;
   canvasContext.fillStyle = color;
   canvasContext.fillRect(x, y, width, height);
 };
@@ -74,24 +75,40 @@ const setControllers = () => {
 };
 
 const gameOver = () => {
+  player.canDraw = false;
+
+  canvasContext.clearRect(0, 0, canvas.width, canvas.height);
+  createRect("black", 0, 0, canvas.width, canvas.height, 1);
+
   localStorage.setItem("gameEnd", true);
   if (score > JSON.parse(localStorage.getItem("score"))) localStorage.setItem("score", score);
+  drawScore();
+  drawHighScore(localStorage.getItem("score"));
+
   canvasContext.font = "30px Emulogic";
   canvasContext.fillStyle = "red";
   canvasContext.fillText("Game Over", 40, canvas.height / 2);
+
   clearInterval(gameTick);
-  setTimeout(() => location.reload(), 1600);
+  setTimeout(() => location.reload(), 2000);
 };
 
 const drawScore = () => {
-  canvasContext.font = "30px Emulogic";
-  canvasContext.fillStyle = "yellow";
-  canvasContext.fillText(`${score}`, 20, 40);
+  if (player.canDraw) {
+    canvasContext.font = "35px Emulogic";
+    canvasContext.fillStyle = "yellow";
+    canvasContext.fillText(`${score}`, canvas.width / 2 - 20, 40);
+  }
+};
+
+const drawHighScore = (score) => {
+  canvasContext.font = "20px Emulogic";
+  canvasContext.fillStyle = "orange";
+  canvasContext.fillText(`HIGHSCORE: ${score}`, 50, canvas.height / 2 - 80);
 };
 
 const start = () => {
-  if (!localStorage.getItem("score")) localStorage.setItem("score", 0);
-  score = JSON.parse(localStorage.getItem("score"));
+  score = 0;
   localStorage.removeItem("gameEnd");
   pipes.forEach((pipe) => {
     pipe.randomY();
@@ -104,13 +121,13 @@ const update = () => {
   createRect("lightblue", 0, 0, canvas.width, canvas.height);
 
   backgrounds.forEach((background) => {
-    background.update();
+    if (player.canDraw) background.update();
   });
   if (backgrounds[0].position.x + backgrounds[0].width < 0) backgrounds[0].position.x = 349;
   if (backgrounds[1].position.x + backgrounds[1].width < 1) backgrounds[1].position.x = 349;
 
   pipes.forEach((pipe) => {
-    pipe.update();
+    if (player.canDraw) pipe.update();
     if (Math.round(pipe.position.x + pipe.width) === player.position.x) {
       scoreAudio.play();
       score += 1;
@@ -128,7 +145,7 @@ const update = () => {
   });
 
   grounds.forEach((ground) => {
-    ground.update();
+    if (player.canDraw) ground.update();
     if (player.position.y + player.height >= ground.position.y) gameOver();
   });
   if (grounds[0].position.x + grounds[0].width < 0) grounds[0].position.x = 349;
